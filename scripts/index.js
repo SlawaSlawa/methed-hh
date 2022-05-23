@@ -85,3 +85,93 @@ overlayVacancy.addEventListener('click', (evt) => {
         overlayVacancy.classList.remove('overlay_active')
     }
 })
+
+// Render cards
+
+const createCard = (vacancy) => {
+    const {
+        id,
+        title,
+        compensation,
+        workSchedule,
+        address,
+        date,
+        description,
+        employer,
+    } = vacancy
+    const card = document.createElement('li')
+    card.classList.add('result__item')
+
+    card.insertAdjacentHTML('afterbegin', `
+            <article class="vacancy">
+                <h2 class="vacancy__title">
+                    <a class="vacancy__open-modal" href="#" data-vacancy="${id}">${title}</a>
+                </h2>
+                <p class="vacancy__compensation">${compensation} руб.</p>
+                <p class="vacancy__work-schedule">${workSchedule}</p>
+                <div class="vacancy__employer">
+                    <p class="vacancy__employer-title">${employer}</p>
+                    <p class="vacancy__employer-address">${address}</p>
+                </div>
+                <p class="vacancy__description">${description}</p>
+                <p class="vacancy__date">
+                    <time datetime="${date}">${date}</time>
+                </p>
+                <div class="vacancy__wrapper-btn">
+                    <a class="vacancy__response vacancy__open-modal" href="#" data-vacancy="${id}">Откликнуться</a>
+                    <button class="vacancy__contacts">Показать контакты</button>
+                </div>
+            </article>
+    `)
+
+    return card
+}
+
+const renderCards = (data) => {
+    console.log(data)
+    resultList.textContent = ''
+    data.forEach(item => {
+        resultList.append(createCard(item))
+    })
+}
+
+const getData = ({search} = {}) => {
+    if (search) {
+        return fetch(`http://localhost:3000/api/vacancy?search=${search}`)
+                        .then(response => response.json())
+    }
+    return fetch('http://localhost:3000/api/vacancy/')
+                        .then(response => response.json())
+}
+                        
+
+const init = async () => {
+    const data = await getData()
+    renderCards(data)
+}
+
+// Search
+
+const formSearch = document.querySelector('.bottom__search')
+
+formSearch.addEventListener('submit', async (evt) => {
+    evt.preventDefault()
+    const textSearch = formSearch.search.value
+    
+    if (textSearch.length > 2) {
+        formSearch.search.style.borderColor = ''
+
+        const data = await getData({search: textSearch})
+        renderCards(data)
+        formSearch.reset()
+    } else {
+        formSearch.search.style.borderColor = 'red'
+        setTimeout(() => {
+            formSearch.search.style.borderColor = ''
+        }, 2000)
+    }
+})
+
+
+
+init()
