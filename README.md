@@ -9,4 +9,4 @@
 HTML, CSS были в исходных файлах
 
 ## Ссылка на GitHub Pages
-[glo-hh](https://slawaslawa.github.io/glo-hh/)
+[methed-hh](https://slawaslawa.github.io/methed-hh/)
